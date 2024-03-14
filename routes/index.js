@@ -38,6 +38,7 @@ router.get('/checkUpdate', function (req, res, next) {
       msg: '',
       data: {
         needUpdate: true,
+        ts:new Date().getTime(),
         url:'https://github.com/amazingCoding/test_app_server/releases/download/1.0.0/app.zip'
       }
     })
