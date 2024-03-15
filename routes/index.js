@@ -40,7 +40,7 @@ router.get('/checkUpdate', function (req, res, next) {
       data: {
         needUpdate: true,
         ts:new Date().getTime(),
-        url:'https://github.com/amazingCoding/test_app_server/releases/download/1.2.0/app.zip'
+        url:'https://github.com/amazingCoding/test_app_server/releases/download/1.3.0/app.zip'
       }
     })
   }
