@@ -15,6 +15,7 @@ const checkVersion = (version1, version2) => {
   while (v2.length < len) {
     v2.push('0');
   }
+  //console.log('version1:', v1, 'version2:', v2);
   for (var i = 0; i < len; i++) {
     var num1 = parseInt(v1[i]);
     var num2 = parseInt(v2[i]);
@@ -32,7 +33,7 @@ router.get('/checkUpdate', function (req, res, next) {
   var version = req.query.version;
   var appVersion = req.query.appVersion;
   // appVersion 小于等于 minAppVersion 时，并且 version 小于 latestVersion 时，返回需要更新
-  if (checkVersion(version, latestVersion) < 0 && checkVersion(appVersion, minAppVersion) <= 0) {
+  if (checkVersion(version, latestVersion) < 0 && checkVersion(appVersion, minAppVersion) >= 0) {
     res.json({
       status: 'SUCCESS',
       msg: '',
