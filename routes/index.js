@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var latestVersion = "1.6.0";
+var latestVersion = "1.9.0";
 var minAppVersion = "1.29.0";
 
 const checkVersion = (version1, version2) => {
@@ -40,7 +40,7 @@ router.get('/checkUpdate', function (req, res, next) {
       data: {
         needUpdate: true,
         ts:new Date().getTime(),
-        url:'https://github.com/amazingCoding/test_app_server/releases/download/1.6/app.zip'
+        url:'https://github.com/amazingCoding/test_app_server/releases/download/1.9/app.zip'
       }
     })
   }
