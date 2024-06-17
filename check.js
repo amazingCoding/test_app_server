@@ -62,7 +62,7 @@ const getCoinRate = async (coin) => {
     const rateRes = await axios.get(`https://min-api.cryptocompare.com/data/price?fsym=${coin}&tsyms=USD`)
     return rateRes.data.USD
   } catch (error) {
-    throw new Error(error.message)
+    return -1
   }
 }
 module.exports = {
