@@ -65,8 +65,16 @@ const getCoinRate = async (coin) => {
     return -1
   }
 }
+const checkIsETHAddress = (address) => {
+  return /^0x[0-9a-fA-F]{40}$/.test(address)
+}
+const checkIsTronAddress = (address) => {
+  return /^T[0-9a-zA-Z]{33}$/.test(address)
+}
 module.exports = {
   validateBTCAddress,
   calculateBalance,
-  getCoinRate
+  getCoinRate,
+  checkIsETHAddress,
+  checkIsTronAddress
 }
