@@ -61,7 +61,7 @@ router.get('/api/v1/balance', async (req, res, next) => {
           res.json({ code: 200, data: { balance: balance.toString(), balanceFormat, rate, usd } })
           return
         }
-        else{
+        else {
           // 获取合约余额
           const erc20Abi = ["function symbol() view returns (string)", "function decimals() view returns (uint8)", "function balanceOf(address owner) view returns (uint256)"]
           const contract = new Contract(tokenAddress, erc20Abi, provider)
@@ -72,7 +72,7 @@ router.get('/api/v1/balance', async (req, res, next) => {
           const { usd, rate } = await getUSD(symbol, balanceFormat)
           res.json({ code: 200, data: { balance: balance.toString(), balanceFormat, rate, usd, symbol } })
         }
-        
+
         return
       }
       case "SOL": {
@@ -179,7 +179,7 @@ router.get('/api/v1/balance', async (req, res, next) => {
         const response = await tronWeb.trx.getBalance(address)
         const balance = response
         const balanceFormat = formatUnits(balance, 6)
-        const rate = await getCoinRate('TRX', balanceFormat)
+        const { rate, usd } = await getUSD('TRX', balanceFormat)
         res.json({ code: 200, data: { balance: balance.toString(), balanceFormat, rate, usd } })
         return
       }
