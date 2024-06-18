@@ -57,7 +57,7 @@ router.get('/api/v1/balance', async (req, res, next) => {
         if (!tokenAddress) {
           const balance = await provider.getBalance(address)
           const balanceFormat = formatEther(balance)
-          const { usd, rate } = await getUSD('ETH', balanceFormat)
+          const { usd, rate } = await getUSD(symbol, balanceFormat)
           res.json({ code: 200, data: { balance: balance.toString(), balanceFormat, rate, usd } })
           return
         }

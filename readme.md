@@ -22,3 +22,15 @@ http://localhost:3001/api/v1/balance?chainType=TRON&address=TG8QEg8CaDEqMt8snmLF
 http://localhost:3001/api/v1/balance?chainType=SOL&address=FwzkteDPohkFbVWArWd6MTvKWGQRaoct2NTsxdQ2JaKQ&priceType=USD
 
 http://localhost:3001/api/v1/balance?chainType=SOL&address=FwzkteDPohkFbVWArWd6MTvKWGQRaoct2NTsxdQ2JaKQ&priceType=USD&tokenAddress=Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB
+
+
+## api/v1/balance
+- GET
+- Params:
+  - chainType: BTC | EVM | TRON | SOL
+  - address: string
+  - priceType: USD
+  - rpcURL: string  [only EVM]
+  - symbol: string  [only EVM]
+  - tokenAddress: string [only EVM | TRON | SOL]
+  - isTest: boolean [only TRON | SOL]
