@@ -1,3 +1,4 @@
+const { PublicKey } = require('@solana/web3.js');
 const { default: axios } = require('axios');
 const bitcoin = require('bitcoinjs-lib'); // 引入 bitcoinjs-lib 库
 // 校验 Base58 地址
@@ -58,6 +59,7 @@ function calculateBalance(data) {
   }
 }
 const getCoinRate = async (coin) => {
+  if (coin === 'UNKNOWN') return -1
   try {
     const rateRes = await axios.get(`https://min-api.cryptocompare.com/data/price?fsym=${coin}&tsyms=USD`)
     return rateRes.data.USD
@@ -71,10 +73,21 @@ const checkIsETHAddress = (address) => {
 const checkIsTronAddress = (address) => {
   return /^T[0-9a-zA-Z]{33}$/.test(address)
 }
+function isValidSolanaAddress(address) {
+  try {
+    const publicKey = new PublicKey(address);
+    // 检查是否是一个有效的公钥
+    return PublicKey.isOnCurve(publicKey);
+  } catch (error) {
+    // 捕获任何异常并返回 false
+    return false;
+  }
+}
 module.exports = {
   validateBTCAddress,
   calculateBalance,
   getCoinRate,
   checkIsETHAddress,
-  checkIsTronAddress
+  checkIsTronAddress,
+  isValidSolanaAddress
 }

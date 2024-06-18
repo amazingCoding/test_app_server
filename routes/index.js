@@ -1,10 +1,13 @@
 var express = require('express');
-var { validateBTCAddress, calculateBalance, getCoinRate, checkIsETHAddress, checkIsTronAddress } = require('../check');
+var { validateBTCAddress, calculateBalance, getCoinRate, checkIsETHAddress, checkIsTronAddress, isValidSolanaAddress } = require('../check');
 const { default: axios } = require('axios');
 const { JsonRpcProvider, formatEther, formatUnits } = require('ethers');
 const { Contract } = require('ethers');
 const TronWeb = require('tronweb');
-
+const solanaWeb3 = require('@solana/web3.js');
+const splToken = require("@solana/spl-token")
+// import { Client } from '@solflare-wallet/utl-sdk';
+const { Client } = require('@solflare-wallet/utl-sdk');
 var router = express.Router();
 
 router.get('/api/v1/balance', async (req, res, next) => {
@@ -69,11 +72,46 @@ router.get('/api/v1/balance', async (req, res, next) => {
         return
       }
       case "SOL": {
-        break
+        if (isValidSolanaAddress(address) === false) {
+          res.json({ code: 400, message: 'Invalid SOL address' })
+          return
+        }
+        const connection = new solanaWeb3.Connection(isTest ? solanaWeb3.clusterApiUrl('devnet') : 'https://sly-hardworking-dew.solana-mainnet.quiknode.pro/f6eb1261fe38b21326f892aabef573a7fa01a80a/')
+        const publicKey = new solanaWeb3.PublicKey(address)
+        if (tokenAddress && tokenAddress !== '') {
+          const tokenPublicKey = new solanaWeb3.PublicKey(tokenAddress)
+          const utl = new Client();
+          const token = await utl.fetchMint(tokenPublicKey)
+          console.log(token);
+          const symbol = token?.symbol || 'UNKNOWN'
+          let decimals = token?.decimals || 0
+          let balance = 0
+          const accounts = await connection.getTokenAccountsByOwner(publicKey, { mint: tokenPublicKey })
+          for (let account of accounts.value) {
+            const tokenAccountInfo = await connection.getParsedAccountInfo(account.pubkey);
+            console.log(tokenAccountInfo.value?.data.parsed);
+            balance = tokenAccountInfo.value?.data.parsed.info.tokenAmount.amount;
+            if (decimals === 0) decimals = tokenAccountInfo.value?.data.parsed.info.tokenAmount.decimals
+          }
+          const balanceFormat = decimals === 0 ? 0 : formatUnits(balance, decimals)
+          const rate = await getCoinRate(symbol)
+          const usd = rate === -1 ? 0 : rate * balanceFormat
+          res.json({ code: 200, data: { balance: balance.toString(), balanceFormat, rate, usd, symbol } })
+          return
+        }
+        const balance = await connection.getBalance(publicKey)
+        const rate = await getCoinRate('SOL')
+        const balanceFormat = formatUnits(balance, 9)
+        const usd = rate === -1 ? 0 : rate * balanceFormat
+        res.json({ code: 200, data: { balance: balance.toString(), balanceFormat, rate, usd } })
+
+
+        return
       }
       case "TRON": {
         if (checkIsTronAddress(address) === false) {
           res.json({ code: 400, message: 'Invalid TRON address' })
+          return
         }
         const header = isTest ? {} : { 'TRON-PRO-API-KEY': 'beeb2792-babf-446c-8b2c-a62149b03f6e' }
         const tronWeb = new TronWeb({
@@ -153,8 +191,21 @@ router.get('/api/v1/balance', async (req, res, next) => {
       }
     }
   } catch (error) {
-    console.log(error);
-    res.json({ code: 400, message: error.message })
+    console.log(typeof error, error);
+    let message = 'unknown error'
+    if (typeof error === 'string') {
+      message = error
+    }
+    else if (error.response) {
+      message = error.response.data.message
+    }
+    else if (error.message) {
+      message = error.message
+    }
+    else {
+      message = error.toString()
+    }
+    res.json({ code: 400, message })
     return
   }
   res.json({

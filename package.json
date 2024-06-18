@@ -6,7 +6,11 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "@metaplex-foundation/js": "^0.20.1",
     "@noble/secp256k1": "^1.7.1",
+    "@solana/spl-token": "^0.4.6",
+    "@solana/web3.js": "^1.93.0",
+    "@solflare-wallet/utl-sdk": "^1.4.0",
     "axios": "^1.7.2",
     "bitcoinjs-lib": "^6.1.6",
     "cookie-parser": "~1.4.4",

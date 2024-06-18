@@ -16,3 +16,9 @@ http://localhost:3001/api/v1/balance?chainType=TRON&address=TG8QEg8CaDEqMt8snmLF
 
 // TRON TOKEN TRX-USDT
 http://localhost:3001/api/v1/balance?chainType=TRON&address=TG8QEg8CaDEqMt8snmLFmSuxEAPQdkQDUq&priceType=USD&tokenAddress=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t
+
+
+// SOL 原生币 SOL
+http://localhost:3001/api/v1/balance?chainType=SOL&address=FwzkteDPohkFbVWArWd6MTvKWGQRaoct2NTsxdQ2JaKQ&priceType=USD
+
+http://localhost:3001/api/v1/balance?chainType=SOL&address=FwzkteDPohkFbVWArWd6MTvKWGQRaoct2NTsxdQ2JaKQ&priceType=USD&tokenAddress=Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB
