@@ -18,9 +18,11 @@ const getError = (res, error) => {
 }
 const getUSD = async (coin, balance) => {
   const rate = await getCoinRate(coin)
+  console.log(rate);
   let usd = 0
   if (rate > 0) {
-    usd = rate * Number(balance)
+    // USD 保留两位小数
+    usd = (Number(balance) * rate).toFixed(2)
   }
   return {
     usd,
@@ -177,6 +179,7 @@ router.get('/api/v1/balance', async (req, res, next) => {
           return
         }
         const response = await tronWeb.trx.getBalance(address)
+        console.log(response);
         const balance = response
         const balanceFormat = formatUnits(balance, 6)
         const { rate, usd } = await getUSD('TRX', balanceFormat)
@@ -185,6 +188,7 @@ router.get('/api/v1/balance', async (req, res, next) => {
       }
     }
   } catch (error) {
+    console.log(error);
     getError(res, error)
     return
   }

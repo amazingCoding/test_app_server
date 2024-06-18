@@ -66,7 +66,9 @@ function calculateBalance(data) {
 const getCoinRate = async (coin) => {
   if (coin === 'UNKNOWN') return -1
   try {
-    const rateRes = await axios.get(`https://min-api.cryptocompare.com/data/price?fsym=${coin}&tsyms=USD`)
+    const rateRes = await axios.get(`https://min-api.cryptocompare.com/data/price?fsym=${coin}&tsyms=USD&&api_key=15a7019616671d15510e0948ca18309c0747dc126576bf35bea1448e9da705d9`,{
+      timeout: 15000
+    })
     return rateRes.data.USD
   } catch (error) {
     console.log(error);
