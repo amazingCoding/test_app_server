@@ -61,15 +61,18 @@ router.get('/api/v1/balance', async (req, res, next) => {
           res.json({ code: 200, data: { balance: balance.toString(), balanceFormat, rate, usd } })
           return
         }
-        // 获取合约余额
-        const erc20Abi = ["function symbol() view returns (string)", "function decimals() view returns (uint8)", "function balanceOf(address owner) view returns (uint256)"]
-        const contract = new Contract(tokenAddress, erc20Abi, provider)
-        const symbol = await contract.symbol();
-        const decimals = await contract.decimals();
-        const balance = await contract.balanceOf(address);
-        const balanceFormat = formatUnits(balance, decimals)
-        const { usd, rate } = await getUSD(symbol, balanceFormat)
-        res.json({ code: 200, data: { balance: balance.toString(), balanceFormat, rate, usd, symbol } })
+        else{
+          // 获取合约余额
+          const erc20Abi = ["function symbol() view returns (string)", "function decimals() view returns (uint8)", "function balanceOf(address owner) view returns (uint256)"]
+          const contract = new Contract(tokenAddress, erc20Abi, provider)
+          const symbol = await contract.symbol();
+          const decimals = await contract.decimals();
+          const balance = await contract.balanceOf(address);
+          const balanceFormat = formatUnits(balance, decimals)
+          const { usd, rate } = await getUSD(symbol, balanceFormat)
+          res.json({ code: 200, data: { balance: balance.toString(), balanceFormat, rate, usd, symbol } })
+        }
+        
         return
       }
       case "SOL": {
