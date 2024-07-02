@@ -1,4 +1,4 @@
-// TEST
+// TEST balance
 
 // BTC
 http://localhost:3001/api/v1/balance?chainType=BTC&address=1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa&priceType=USD
@@ -23,7 +23,6 @@ http://localhost:3001/api/v1/balance?chainType=SOL&address=FwzkteDPohkFbVWArWd6M
 
 http://localhost:3001/api/v1/balance?chainType=SOL&address=FwzkteDPohkFbVWArWd6MTvKWGQRaoct2NTsxdQ2JaKQ&priceType=USD&tokenAddress=Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB
 
-
 ## api/v1/balance
 - GET
 - Params:
@@ -34,3 +33,15 @@ http://localhost:3001/api/v1/balance?chainType=SOL&address=FwzkteDPohkFbVWArWd6M
   - symbol: string  [only EVM]
   - tokenAddress: string [only EVM | TRON | SOL]
   - isTest: boolean [only TRON | SOL]
+
+
+// TEST tokenInfo
+// EVM TOKEN 
+http://localhost:3001/api/v1/tokenInfo?chainType=EVM&rpcURL=https%3A%2F%2Frpc-sepolia.rockx.com&tokenAddress=0x1f9840a85d5af5bf1d1762f925bdaddc4201f984
+
+// TRON TOKEN 
+http://localhost:3001/api/v1/tokenInfo?chainType=TRON&&tokenAddress=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t
+
+// SOL TOKEN
+http://localhost:3001/api/v1/tokenInfo?chainType=SOL&tokenAddress=Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB
+http://localhost:3001/api/v1/tokenInfo?chainType=SOL&tokenAddress=3zyKg7L471V9FGb4LGMLxpygY7M8srCAzQtM1HWgCixy

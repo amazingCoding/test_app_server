@@ -7,7 +7,6 @@ const TronWeb = require('tronweb')
 const solanaWeb3 = require('@solana/web3.js')
 const { Client } = require('@solflare-wallet/utl-sdk')
 const router = express.Router()
-
 const getError = (res, error) => {
   console.log(typeof error, error);
   let message = 'unknown error'
@@ -21,7 +20,6 @@ const getUSD = async (coin, balance) => {
   console.log(rate);
   let usd = 0
   if (rate > 0) {
-    // USD 保留两位小数
     usd = (Number(balance) * rate).toFixed(2)
   }
   return {
@@ -199,5 +197,144 @@ router.get('/api/v1/balance', async (req, res, next) => {
     }
   })
 
+})
+router.get('/api/v1/tokenInfo', async (req, res, next) => {
+  const { chainType, rpcURL, tokenAddress, isTest } = req.query
+  try {
+    switch (chainType) {
+      case "EVM": {
+        if (checkIsETHAddress(tokenAddress) === false) {
+          getError(res, 'Invalid token address')
+          return
+        }
+        if (rpcURL === '') {
+          getError(res, 'Invalid RPC URL')
+          return
+        }
+        const url = decodeURIComponent(rpcURL)
+        const provider = new JsonRpcProvider(url)
+        // 获取合约 token 信息 name, symbol, decimals，totalSupply
+        const erc20Abi = ["function name() view returns (string)", "function symbol() view returns (string)", "function decimals() view returns (uint8)", "function totalSupply() view returns (uint256)"]
+        const contract = new Contract(tokenAddress, erc20Abi, provider)
+        const symbol = await contract.symbol();
+        const decimals = await contract.decimals();
+        const name = await contract.name();
+        const totalSupply = await contract.totalSupply();
+        res.json({ code: 200, data: { name, symbol, decimals: Number(decimals.toString()), totalSupply: totalSupply.toString() } })
+        return
+      }
+      case "SOL": {
+        console.log(tokenAddress);
+        if (isValidSolanaAddress(tokenAddress) === false) {
+          getError(res, 'Invalid SOL address')
+          return
+        }
+        const connection = new solanaWeb3.Connection(isTest ? solanaWeb3.clusterApiUrl('devnet') : 'https://sly-hardworking-dew.solana-mainnet.quiknode.pro/f6eb1261fe38b21326f892aabef573a7fa01a80a/')
+        const tokenPublicKey = new solanaWeb3.PublicKey(tokenAddress)
+        const utl = new Client();
+        const token = await utl.fetchMint(tokenPublicKey)
+        const result = await connection.getParsedAccountInfo(tokenPublicKey)
+        const symbol = token?.symbol || 'UNKNOWN'
+        const name = token?.name || 'UNKNOWN'
+        let decimals = token?.decimals || 0
+        const totalSupply = result.value.data.parsed.info.supply || 0
+        if (decimals === 0) decimals = result.value.data.parsed.info.decimals
+        res.json({ code: 200, data: { name, symbol, totalSupply, decimals: Number(decimals.toString()) } })
+        return
+      }
+      case "TRON": {
+        if (checkIsTronAddress(tokenAddress) === false) {
+          getError(res, 'Invalid TRON address')
+          return
+        }
+        const headers = isTest ? {} : { 'TRON-PRO-API-KEY': 'beeb2792-babf-446c-8b2c-a62149b03f6e' }
+        const fullHost = isTest ? 'https://api.shasta.trongrid.io' : 'https://api.trongrid.io'
+        const tronWeb = new TronWeb({ fullHost, headers })
+        tronWeb.setAddress('TG8QEg8CaDEqMt8snmLFmSuxEAPQdkQDUq')
+        const abi = [
+          {
+            "constant": true,
+            "inputs": [],
+            "name": "name",
+            "outputs": [
+              {
+                "name": "",
+                "type": "string"
+              }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "constant": true,
+            "inputs": [],
+            "name": "symbol",
+            "outputs": [
+              {
+                "name": "",
+                "type": "string"
+              }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "constant": true,
+            "inputs": [],
+            "name": "decimals",
+            "outputs": [
+              {
+                "name": "",
+                "type": "uint8"
+              }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "constant": true,
+            "inputs": [],
+            "name": "totalSupply",
+            "outputs": [
+              {
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+          }
+        ]
+        const contract = await tronWeb.contract(abi, tokenAddress)
+        const symbol = await contract.symbol().call()
+        const name = await contract.name().call()
+        const totalSupply = await contract.totalSupply().call()
+        const decimals = await contract.decimals().call()
+        res.json({ code: 200, data: { name, symbol, totalSupply: totalSupply.toString(), decimals: Number(decimals.toString()) } })
+        return
+
+        return
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    getError(res, error)
+    return
+  }
+  res.json({
+    code: 200,
+    data: {
+      balance: 100
+    }
+  })
+
+})
+router.get('/test', async (req, res, next) => {
+  // 关闭
+  await browser.close();
 })
 module.exports = router;
