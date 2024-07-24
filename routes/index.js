@@ -376,7 +376,7 @@ router.get('/api/v1/urlDesc', async (req, res, next) => {
   const $ = cheerio.load(response.data)
   title = $('title').text()
   desc = $('meta[name="description"]').attr('content')
-  image = $('meta[property="og:image"]').attr('content')
+  image = $('img').first().attr('src');
   res.json({
     code: 200,
     data: { title, desc, image }
