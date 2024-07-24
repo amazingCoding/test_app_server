@@ -2,6 +2,7 @@ const express = require('express')
 const { validateBTCAddress, calculateBalance, getCoinRate, checkIsETHAddress, checkIsTronAddress, isValidSolanaAddress } = require('../check')
 const { default: axios } = require('axios')
 const { JsonRpcProvider, formatEther, formatUnits } = require('ethers')
+const cheerio = require('cheerio');
 const { Contract } = require('ethers')
 const TronWeb = require('tronweb')
 const solanaWeb3 = require('@solana/web3.js')
@@ -364,6 +365,21 @@ router.get('/api/v1/getShitHolders', async (req, res, next) => {
     data: {
       holdersNumber: allOwners.size
     }
+  })
+})
+router.get('/api/v1/urlDesc', async (req, res, next) => {
+  const { url } = req.query
+  let title = ''
+  let desc = ''
+  let image = ''
+  const response = await axios.get(decodeURIComponent(url))
+  const $ = cheerio.load(response.data)
+  title = $('title').text()
+  desc = $('meta[name="description"]').attr('content')
+  image = $('meta[property="og:image"]').attr('content')
+  res.json({
+    code: 200,
+    data: { title, desc, image }
   })
 })
 router.get('/test', async (req, res, next) => {
