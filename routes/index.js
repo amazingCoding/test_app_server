@@ -361,12 +361,45 @@ router.get('/api/v1/getShitHolders', async (req, res, next) => {
     cursor = data.result.cursor
   }
   // 所有持有者的地址
-  const allOwnersArray = Array.from(allOwners)
   res.json({
     code: 200,
     data: {
       holdersNumber: allOwners.size,
-      allOwnersArray
+    }
+  })
+})
+router.get('/api/v1/getTokentHolderAddress', async (req, res, next) => {
+  const { tokenAddress } = req.query
+  //header Token
+  const apiKey = 'cf33bf4e-9364-4262-a27f-c8e869c5443e'
+  const url = `https://mainnet.helius-rpc.com/?api-key=${apiKey}`
+  let allOwners = new Set();
+  let cursor;
+  while (true) {
+    let params = { limit: 1000, mint: tokenAddress }
+    if (cursor != undefined) params.cursor = cursor
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ jsonrpc: "2.0", id: "text", method: "getTokenAccounts", params: params })
+    })
+    const data = await response.json()
+    if (!data.result || data.result.token_accounts.length === 0) {
+      console.log("No more results");
+      break;
+    }
+    data.result.token_accounts.forEach((account) => {
+      allOwners.add(account.owner);
+    })
+    cursor = data.result.cursor
+  }
+  // 所有持有者的地址
+  const allOwnersArray = Array.from(allOwners)
+  res.json({
+    code: 200,
+    data: {
+      holders: allOwnersArray,
     }
   })
 })
