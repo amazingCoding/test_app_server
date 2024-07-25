@@ -360,11 +360,13 @@ router.get('/api/v1/getShitHolders', async (req, res, next) => {
     })
     cursor = data.result.cursor
   }
+  // 所有持有者的地址
+  const allOwnersArray = Array.from(allOwners)
   res.json({
     code: 200,
     data: {
       holdersNumber: allOwners.size,
-      allOwners
+      allOwnersArray
     }
   })
 })
