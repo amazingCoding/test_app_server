@@ -363,25 +363,12 @@ router.get('/api/v1/getShitHolders', async (req, res, next) => {
   res.json({
     code: 200,
     data: {
-      holdersNumber: allOwners.size
+      holdersNumber: allOwners.size,
+      allOwners
     }
   })
 })
-router.get('/api/v1/urlDesc', async (req, res, next) => {
-  const { url } = req.query
-  let title = ''
-  let desc = ''
-  let image = ''
-  const response = await axios.get(decodeURIComponent(url))
-  const $ = cheerio.load(response.data)
-  title = $('title').text()
-  desc = $('meta[name="description"]').attr('content')
-  image = $('img').first().attr('src');
-  res.json({
-    code: 200,
-    data: { title, desc, image }
-  })
-})
+
 router.get('/test', async (req, res, next) => {
   // 关闭
   await browser.close();
