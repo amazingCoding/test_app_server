@@ -337,7 +337,7 @@ router.get('/api/v1/tokenInfo', async (req, res, next) => {
 router.get('/api/v1/getShitHolders', async (req, res, next) => {
   const { tokenAddress } = req.query
   //header Token
-  const apiKey = 'cf33bf4e-9364-4262-a27f-c8e869c5443e'
+  const apiKey = '4fc487d2-3a1d-4619-a3a8-2f0ce8de2a5b'
   const url = `https://mainnet.helius-rpc.com/?api-key=${apiKey}`
   let allOwners = new Set();
   let cursor;
